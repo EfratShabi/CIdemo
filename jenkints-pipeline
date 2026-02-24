@@ -6,11 +6,30 @@ pipeline {
     }
     
     options {
-        // העליתי ל-2 דקות כדי שה-sleep של ה-15 שניות לא יכשיל את הריצה
+        // הגבלת זמן לריצה כולה כדי למנוע תקיעה של השרת
         timeout(time: 2, unit: 'MINUTES') 
     }
     
     stages {
+        stage('connect to github') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'my_security_github', 
+                        usernameVariable: 'USER', 
+                        passwordVariable: 'PASS'
+                    )
+                ]) {
+                    // פקודות Batch עבור שרת מבוסס Windows
+                    bat '''
+                    @echo off
+                    echo Deploying as %USER%
+                    REM כאן תבוא הפקודה שמשתמשת ב-%PASS%
+                    '''
+                }
+            } 
+        }
+
         stage('Hello') {
             steps {
                 sleep time: 15, unit: 'SECONDS'
@@ -18,7 +37,7 @@ pipeline {
                 echo 'Hello World'
                 echo "${APP_ENV}"
             }
-        } // סגירת ה-stage הראשון
+        }
         
         stage("stage number one") {
             steps {
