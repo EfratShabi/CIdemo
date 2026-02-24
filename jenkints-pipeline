@@ -6,21 +6,11 @@ pipeline {
     }
     
     options {
+        // העליתי ל-2 דקות כדי שה-sleep של ה-15 שניות לא יכשיל את הריצה
         timeout(time: 2, unit: 'MINUTES') 
     }
     
     stages {
-        stage('connect to github'){
-        steps{
-            withCredentials([
-    		  usernamePassword(credentialsId: 'GitHubUser', usernameVariable: 'USER', passwordVariable: 'PASS'),
-    		]) {
-    		  bat '''
-    			echo  Deploying as %USER% %PASS%
-    		  '''
-    		}
-        }
-        }
         stage('Hello') {
             steps {
                 sleep time: 15, unit: 'SECONDS'
@@ -28,7 +18,7 @@ pipeline {
                 echo 'Hello World'
                 echo "${APP_ENV}"
             }
-        } 
+        } // סגירת ה-stage הראשון
         
         stage("stage number one") {
             steps {
@@ -42,5 +32,5 @@ pipeline {
                 echo "The second step"
             }
         }
-    } 
-}
+    } // סגירת ה-stages
+} // סגירת ה-pipeline
